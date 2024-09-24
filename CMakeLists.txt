@@ -26,12 +26,12 @@ userver_setup_environment()
 
 # Common sources
 add_library(${PROJECT_NAME}_objs OBJECT
-    src/add-segment.hpp
-    src/add-segment.cpp
-    src/delete-segment.hpp
-    src/delete-segment.cpp
-    src/update-segment.hpp
-    src/update-segment.cpp
+    src/add-segment/view.hpp
+    src/add-segment/view.cpp
+    src/delete-segment/view.hpp
+    src/delete-segment/view.cpp
+    src/update-segment/view.hpp
+    src/update-segment/view.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 

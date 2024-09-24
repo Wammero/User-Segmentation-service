@@ -1,4 +1,4 @@
-#include "add-segment.hpp"
+#include "view.hpp"
 
 #include <fmt/format.h>
 
@@ -13,11 +13,11 @@ namespace user_segmentation_service {
 
 namespace {
 
-class AddSegment final : public userver::server::handlers::HttpHandlerBase {
+class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
  public:
-  static constexpr std::string_view kName = "handler-add-segment";
+  static constexpr std::string_view kName = "handler-update-segment";
 
-  AddSegment(const userver::components::ComponentConfig& config,
+  UpdateSegment(const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context)
       : HttpHandlerBase(config, component_context),
         pg_cluster_(
@@ -31,21 +31,24 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
     
     try {
 
-    auto segment_name = request.GetArg("name");
+        auto request_body =
+            userver::formats::json::FromString(request.RequestBody());
 
-    auto result = pg_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kMaster,
-      "INSERT INTO segments(segment_name, percentage) VALUES ($1, $2) "
-      "ON CONFLICT (segment_name) DO NOTHING "
-      "RETURNING segment_id",
-      segment_name, 0
-    );
+        auto segment_id = request.GetPathArg("id");
+        auto segment_name = request_body["name"].As<std::optional<std::string>>();
 
-    if(result.IsEmpty()) {
-      return "BAD";
-    }
+        if(!segment_name.has_value()) {
+            return "BAD";
+        }
 
-    return "OK";
+        pg_cluster_->Execute(
+            userver::storages::postgres::ClusterHostType::kMaster,
+            "UPDATE segments SET segment_name = $2 "
+            "WHERE segment_id = $1",
+            std::stoi(segment_id), segment_name
+        );
+
+        return "OK";
     } catch (std::exception& ex) {
       return ex.what();
     }
@@ -57,8 +60,8 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
 }  // namespace
 
 
-void AppendAddSegment(userver::components::ComponentList& component_list) {
-  component_list.Append<AddSegment>();
+void AppendUpdateSegment(userver::components::ComponentList& component_list) {
+  component_list.Append<UpdateSegment>();
 }
 
 }  // namespace user_segmentation_service

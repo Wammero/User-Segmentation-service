@@ -7,9 +7,9 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 
-#include "add-segment.hpp"
-#include "update-segment.hpp"
-#include "delete-segment.hpp"
+#include "add-segment/view.hpp"
+#include "update-segment/view.hpp"
+#include "delete-segment/view.hpp"
 
 int main(int argc, char* argv[]) {
   auto component_list =
