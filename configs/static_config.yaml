@@ -65,6 +65,11 @@ components_manager:
             method: DELETE                  
             task_processor: main-task-processor 
 
+        handler-add-user-to-segment:                    
+            path: /add-user-to-segment/{id}               
+            method: POST                  
+            task_processor: main-task-processor 
+
         postgres-db-1:
             dbconnection: $dbconnection
             dbconnection#env: DB_CONNECTION

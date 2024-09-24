@@ -31,21 +31,25 @@ class AddUserToSegment final : public userver::server::handlers::HttpHandlerBase
     
     try {
 
-    auto segment_name = request.GetArg("name");
+        auto request_body =
+            userver::formats::json::FromString(request.RequestBody());
 
-    auto result = pg_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kMaster,
-      "INSERT INTO segments(segment_name, percentage) VALUES ($1, $2) "
-      "ON CONFLICT (segment_name) DO NOTHING "
-      "RETURNING segment_id",
-      segment_name, 0
-    );
+        auto user_id = request.GetPathArg("id");
+        auto segment_id = request_body["id"].As<std::optional<int>>();
 
-    if(result.IsEmpty()) {
-      return "BAD";
-    }
+        auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+            "INSERT INTO user_segments(user_id, segment_id) VALUES ($1, $2) "
+            "ON CONFLICT (user_id, segment_id) DO NOTHING "
+            "RETURNING user_segment_id",
+            std::stoi(user_id), segment_id
+        );
 
-    return "OK";
+        if(result.IsEmpty()) {
+            return "BAD";
+        }
+
+        return "OK";
     } catch (std::exception& ex) {
       return ex.what();
     }

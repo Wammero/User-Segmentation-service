@@ -32,6 +32,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/delete-segment/view.cpp
     src/update-segment/view.hpp
     src/update-segment/view.cpp
+    src/add-user-to-segment/view.hpp
+    src/add-user-to-segment/view.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 
