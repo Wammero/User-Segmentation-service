@@ -28,12 +28,20 @@ userver_setup_environment()
 add_library(${PROJECT_NAME}_objs OBJECT
     src/add-segment/view.hpp
     src/add-segment/view.cpp
+    src/add-user/view.hpp
+    src/add-user/view.cpp
+    src/get-users/view.hpp
+    src/get-users/view.cpp
     src/delete-segment/view.hpp
     src/delete-segment/view.cpp
+    src/delete-user/view.hpp
+    src/delete-user/view.cpp
     src/update-segment/view.hpp
     src/update-segment/view.cpp
     src/add-user-to-segment/view.hpp
     src/add-user-to-segment/view.cpp
+    src/delete-user-from-segment/view.hpp
+    src/delete-user-from-segment/view.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 

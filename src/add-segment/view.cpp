@@ -31,24 +31,27 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
     
     try {
 
-    auto segment_name = request.GetArg("name");
+      auto request_body =
+              userver::formats::json::FromString(request.RequestBody());
 
-    auto result = pg_cluster_->Execute(
-      userver::storages::postgres::ClusterHostType::kMaster,
-      "INSERT INTO segments(segment_name, percentage) VALUES ($1, $2) "
-      "ON CONFLICT (segment_name) DO NOTHING "
-      "RETURNING segment_id",
-      segment_name, 0
-    );
+      auto name = request_body["name"].As<std::optional<std::string>>();
 
-    if(result.IsEmpty()) {
-      return "BAD";
-    }
+      auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "INSERT INTO segments(segment_name, percentage) VALUES ($1, $2) "
+        "ON CONFLICT (segment_name) DO NOTHING "
+        "RETURNING segment_id",
+        name, 0
+      );
 
-    return "OK";
-    } catch (std::exception& ex) {
-      return ex.what();
-    }
+      if(result.IsEmpty()) {
+        return "BAD";
+      }
+
+      return "{\"status\": \"OK\"}";
+      } catch (std::exception& ex) {
+        return ex.what();
+      }
   }
 
   userver::storages::postgres::ClusterPtr pg_cluster_;

@@ -49,7 +49,7 @@ class AddUserToSegment final : public userver::server::handlers::HttpHandlerBase
             return "BAD";
         }
 
-        return "OK";
+        return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
       return ex.what();
     }

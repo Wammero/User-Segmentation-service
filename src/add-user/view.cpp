@@ -13,11 +13,11 @@ namespace user_segmentation_service {
 
 namespace {
 
-class DeleteSegment final : public userver::server::handlers::HttpHandlerBase {
+class AddUser final : public userver::server::handlers::HttpHandlerBase {
  public:
-  static constexpr std::string_view kName = "handler-delete-segment";
+  static constexpr std::string_view kName = "handler-add-user";
 
-  DeleteSegment(const userver::components::ComponentConfig& config,
+  AddUser(const userver::components::ComponentConfig& config,
         const userver::components::ComponentContext& component_context)
       : HttpHandlerBase(config, component_context),
         pg_cluster_(
@@ -30,25 +30,28 @@ class DeleteSegment final : public userver::server::handlers::HttpHandlerBase {
       userver::server::request::RequestContext&) const override {
     
     try {
+    
+        auto request_body =
+            userver::formats::json::FromString(request.RequestBody());
 
-        auto segment_id = request.GetPathArg("id");
+        auto name = request_body["name"].As<std::optional<std::string>>();
+        auto email = request_body["email"].As<std::optional<std::string>>();
 
-        pg_cluster_->Execute(
+        auto result = pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,
-            "DELETE FROM user_segments USING segments "
-            "WHERE user_segments.segment_id = segments.segment_id AND segments.segment_id = $1",
-            std::stoi(segment_id)
+            "INSERT INTO users(username, email) VALUES ($1, $2) "
+            "ON CONFLICT (email) DO NOTHING "
+            "RETURNING user_id",
+            name, email
         );
 
-        pg_cluster_->Execute(
-            userver::storages::postgres::ClusterHostType::kMaster,
-            "DELETE FROM segments WHERE segment_id = $1",
-            std::stoi(segment_id)
-        );
+        if(result.IsEmpty()) {
+            return "BAD";
+        }
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-      return ex.what();
+        return ex.what();
     }
   }
 
@@ -58,8 +61,8 @@ class DeleteSegment final : public userver::server::handlers::HttpHandlerBase {
 }  // namespace
 
 
-void AppendDeleteSegment(userver::components::ComponentList& component_list) {
-  component_list.Append<DeleteSegment>();
+void AppendAddUser(userver::components::ComponentList& component_list) {
+  component_list.Append<AddUser>();
 }
 
 }  // namespace user_segmentation_service

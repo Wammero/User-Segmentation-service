@@ -42,6 +42,15 @@
         "ostream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "istream": "cpp",
+        "sstream": "cpp",
+        "bitset": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "map": "cpp",
+        "unordered_set": "cpp",
+        "optional": "cpp",
+        "regex": "cpp"
     }
 }

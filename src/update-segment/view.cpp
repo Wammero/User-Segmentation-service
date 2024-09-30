@@ -48,7 +48,7 @@ class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
             std::stoi(segment_id), segment_name
         );
 
-        return "OK";
+        return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
       return ex.what();
     }

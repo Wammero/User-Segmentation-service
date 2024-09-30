@@ -53,6 +53,16 @@ components_manager:
         handler-add-segment:                    
             path: /add-segment               
             method: POST                  
+            task_processor: main-task-processor
+
+        handler-add-user:                    
+            path: /add-user               
+            method: POST                  
+            task_processor: main-task-processor
+
+        handler-get-users:                    
+            path: /get-users               
+            method: GET                  
             task_processor: main-task-processor 
         
         handler-update-segment:                    
@@ -65,10 +75,21 @@ components_manager:
             method: DELETE                  
             task_processor: main-task-processor 
 
+        handler-delete-user:                    
+            path: /delete-user/{id}               
+            method: DELETE                  
+            task_processor: main-task-processor 
+
         handler-add-user-to-segment:                    
             path: /add-user-to-segment/{id}               
             method: POST                  
-            task_processor: main-task-processor 
+            task_processor: main-task-processor
+        
+        handler-delete-user-from-segment:                    
+            path: /delete-user-from-segment/{id}               
+            method: DELETE                  
+            task_processor: main-task-processor
+        
 
         postgres-db-1:
             dbconnection: $dbconnection
