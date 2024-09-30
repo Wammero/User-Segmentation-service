@@ -64,6 +64,11 @@ components_manager:
             path: /get-users               
             method: GET                  
             task_processor: main-task-processor 
+
+        handler-get-segments:                    
+            path: /get-segments              
+            method: GET                  
+            task_processor: main-task-processor 
         
         handler-update-segment:                    
             path: /update-segment/{id}               
@@ -88,6 +93,11 @@ components_manager:
         handler-delete-user-from-segment:                    
             path: /delete-user-from-segment/{id}               
             method: DELETE                  
+            task_processor: main-task-processor
+
+        handler-distribute-segment:                    
+            path: /distribute-segment               
+            method: POST                  
             task_processor: main-task-processor
         
 

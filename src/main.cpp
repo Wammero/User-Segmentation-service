@@ -10,11 +10,13 @@
 #include "add-segment/view.hpp"
 #include "add-user/view.hpp"
 #include "get-users/view.hpp"
+#include "get-segments/view.hpp"
 #include "update-segment/view.hpp"
 #include "delete-segment/view.hpp"
 #include "delete-user/view.hpp"
 #include "add-user-to-segment/view.hpp"
 #include "delete-user-from-segment/view.hpp"
+#include "distribute-segment/view.hpp"
 
 int main(int argc, char* argv[]) {
   auto component_list =
@@ -30,11 +32,13 @@ int main(int argc, char* argv[]) {
   user_segmentation_service::AppendAddSegment(component_list);
   user_segmentation_service::AppendAddUser(component_list);
   user_segmentation_service::AppendGetUsers(component_list);
+  user_segmentation_service::AppendGetSegments(component_list);
   user_segmentation_service::AppendUpdateSegment(component_list);
   user_segmentation_service::AppendDeleteSegment(component_list);
   user_segmentation_service::AppendDeleteUser(component_list);
   user_segmentation_service::AppendAddUserToSegment(component_list);
   user_segmentation_service::AppendDeleteUserFromSegment(component_list);
+  user_segmentation_service::AppendDistributeSegment(component_list);
 
   return userver::utils::DaemonMain(argc, argv, component_list);
 }

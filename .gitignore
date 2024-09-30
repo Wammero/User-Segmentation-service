@@ -4,4 +4,5 @@
 build_debug
 third_party/userver
 __pycache__
-
+.vscode
+build
