@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "../validator/view.hpp"
 
 #include <fmt/format.h>
 
@@ -41,6 +42,11 @@ class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
 
         auto segment_id = request.GetPathArg("segment_id");
         auto segment_name = request_body["name"].As<std::optional<std::string>>();
+
+        if(!Validator::IsLimitValid(segment_id)) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "Bad request.";
+        }
 
         if(!segment_name.has_value()) {
           request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);

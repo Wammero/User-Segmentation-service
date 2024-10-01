@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "../validator/view.hpp"
 
 #include <fmt/format.h>
 #include <sstream>
@@ -44,7 +45,14 @@ class GetUsers final : public userver::server::handlers::HttpHandlerBase {
     try {
         std::optional<int> segment_id = std::nullopt;
         if(request.HasArg("segment_id")) {
-            segment_id = std::stoi(request.GetArg("segment_id"));
+            auto segment_id_str = request.GetArg("segment_id");
+
+            if(!Validator::IsLimitValid(segment_id_str)) {
+                request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+                return "Bad request.";
+            }
+
+            segment_id = std::stoi(segment_id_str);
         }
 
         auto result = pg_cluster_->Execute(

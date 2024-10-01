@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "../validator/view.hpp"
 
 #include <fmt/format.h>
 #include <sstream>
@@ -33,13 +34,32 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
       userver::server::request::RequestContext&) const override {
     
     try {
-        auto segment_id = request.GetPathArg("segment_id");
-        auto percentage = request.GetArg("percentage");
+        auto segment_id_str = request.GetPathArg("segment_id");
+
+        if(!request.HasArg("percentage")) {
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+            return "No arguments.";
+        }
+
+        auto percentage_str = request.GetArg("percentage");
+
+        if(!Validator::IsLimitValid(percentage_str) || !Validator::IsLimitValid(segment_id_str)) {
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+            return "Bad request.";
+        }
+        
+        int segment_id = std::stoi(segment_id_str);
+        int percentage = std::stoi(percentage_str);
+
+        if(percentage>100 || percentage<0) {
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+            return "Bad request.";
+        }
 
         auto result = pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,
             "SELECT percentage FROM segments WHERE segment_id = $1",
-            std::stoi(segment_id)
+            segment_id
         );
 
         if(result.IsEmpty()) {
@@ -49,14 +69,14 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
 
         int table_percentage = result.AsSingleRow<int>();
 
-        if(table_percentage >= std::stoi(percentage)) {
+        if(table_percentage >= percentage) {
             return "{\"status\": \"OK\"}";
         }
 
         pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,
             "UPDATE segments SET percentage = $1 WHERE segment_id = $2",
-            std::stoi(percentage), std::stoi(segment_id)
+            percentage, segment_id
         );
 
         auto count = pg_cluster_->Execute(
@@ -68,10 +88,10 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
         auto current_segment_users = pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,
             "SELECT COUNT(*) FROM user_segments WHERE segment_id = $1",
-            std::stoi(segment_id)
+            segment_id
         );
 
-        int target_users_in_segment = std::stoi(percentage) * total_users / 100;
+        int target_users_in_segment = percentage * total_users / 100;
 
         int users_to_add = target_users_in_segment - current_segment_users.AsSingleRow<int>();
 
@@ -83,7 +103,7 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
                 "LEFT JOIN user_segments ON users.user_id = user_segments.user_id AND user_segments.segment_id = $1 "
                 "WHERE user_segments.user_id IS NULL "
                 "LIMIT $2",
-                std::stoi(segment_id), users_to_add
+                segment_id, users_to_add
             );
         }
 

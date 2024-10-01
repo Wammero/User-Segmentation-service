@@ -31,8 +31,14 @@ class AddUser final : public userver::server::handlers::HttpHandlerBase {
     
     try {
     
-        auto request_body =
-            userver::formats::json::FromString(request.RequestBody());
+        auto json_request_body = request.RequestBody();
+        
+        if(json_request_body.empty()) {
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+            return "No arguments.";
+        }
+
+        auto request_body = userver::formats::json::FromString(json_request_body);
 
         auto username = request_body["username"].As<std::optional<std::string>>();
         auto email = request_body["email"].As<std::optional<std::string>>();

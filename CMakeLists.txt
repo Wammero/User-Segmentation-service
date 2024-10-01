@@ -46,6 +46,8 @@ add_library(${PROJECT_NAME}_objs OBJECT
     src/delete-user-from-segment/view.cpp
     src/distribute-segment/view.hpp
     src/distribute-segment/view.cpp
+    src/validator/view.hpp
+    src/validator/view.cpp
 )
 target_link_libraries(${PROJECT_NAME}_objs PUBLIC userver::postgresql)
 

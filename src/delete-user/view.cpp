@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "../validator/view.hpp"
 
 #include <fmt/format.h>
 
@@ -32,6 +33,11 @@ class DeleteUser final : public userver::server::handlers::HttpHandlerBase {
     try {
 
         auto user_id = request.GetPathArg("user_id");
+
+        if(!Validator::IsLimitValid(user_id)) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "Bad request.";
+        }
 
         pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,

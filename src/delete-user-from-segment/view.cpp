@@ -1,4 +1,5 @@
 #include "view.hpp"
+#include "../validator/view.hpp"
 
 #include <fmt/format.h>
 
@@ -32,7 +33,18 @@ class DeleteUserFromSegment final : public userver::server::handlers::HttpHandle
     try {
 
         auto user_id = request.GetPathArg("user_id");
+
+        if(!request.HasArg("segment_id")) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "No arguments.";
+        }
+        
         auto segment_id = request.GetArg("segment_id");
+
+        if(!Validator::IsLimitValid(segment_id) || !Validator::IsLimitValid(user_id)) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "Bad request.";
+        }
 
 
         pg_cluster_->Execute(
