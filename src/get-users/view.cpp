@@ -52,11 +52,6 @@ class GetUsers final : public userver::server::handlers::HttpHandlerBase {
             BuildDbRequest(segment_id),
             segment_id
         );
-
-        if(result.IsEmpty()) {
-            return "BAD";
-        }
-
         
         userver::formats::json::ValueBuilder products_array(userver::formats::json::Type::kArray);
 
@@ -73,7 +68,8 @@ class GetUsers final : public userver::server::handlers::HttpHandlerBase {
                                                     {' ', 4});
 
     } catch (std::exception& ex) {
-        return ex.what();
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return "Bad request.";
     }
   }
 

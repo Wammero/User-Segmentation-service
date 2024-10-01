@@ -81,17 +81,17 @@ components_manager:
             task_processor: main-task-processor 
 
         handler-delete-user:                    
-            path: /delete-user/{id}               
+            path: /delete-user/{user_id}               
             method: DELETE                  
             task_processor: main-task-processor 
 
         handler-add-user-to-segment:                    
-            path: /add-user-to-segment/{id}               
+            path: /add-user-to-segment/{user_id}               
             method: POST                  
             task_processor: main-task-processor
         
         handler-delete-user-from-segment:                    
-            path: /delete-user-from-segment/{id}               
+            path: /delete-user-from-segment/{user_id}               
             method: DELETE                  
             task_processor: main-task-processor
 

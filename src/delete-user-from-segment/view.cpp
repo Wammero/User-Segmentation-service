@@ -31,8 +31,8 @@ class DeleteUserFromSegment final : public userver::server::handlers::HttpHandle
     
     try {
 
-        auto user_id = request.GetPathArg("id");
-        auto segment_id = request.GetArg("id");
+        auto user_id = request.GetPathArg("user_id");
+        auto segment_id = request.GetArg("segment_id");
 
 
         pg_cluster_->Execute(
@@ -44,7 +44,8 @@ class DeleteUserFromSegment final : public userver::server::handlers::HttpHandle
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-      return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 

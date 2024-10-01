@@ -31,11 +31,12 @@ class AddUserToSegment final : public userver::server::handlers::HttpHandlerBase
     
     try {
 
-        auto request_body =
-            userver::formats::json::FromString(request.RequestBody());
-
-        auto user_id = request.GetPathArg("id");
-        auto segment_id = request_body["id"].As<std::optional<int>>();
+        auto user_id = request.GetPathArg("user_id");
+        if(!request.HasArg("segment_id")) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "No arguments.";
+        }
+        auto segment_id = request.GetArg("segment_id");
 
         auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
@@ -46,12 +47,14 @@ class AddUserToSegment final : public userver::server::handlers::HttpHandlerBase
         );
 
         if(result.IsEmpty()) {
-            return "BAD";
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "Bad request.";
         }
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-      return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 

@@ -54,7 +54,8 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
       );
 
       if(result.IsEmpty()) {
-        return "BAD";
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return "Bad request.";
       }
 
       return "{\"status\": \"OK\"}";

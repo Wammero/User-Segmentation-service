@@ -34,7 +34,7 @@ class AddUser final : public userver::server::handlers::HttpHandlerBase {
         auto request_body =
             userver::formats::json::FromString(request.RequestBody());
 
-        auto name = request_body["name"].As<std::optional<std::string>>();
+        auto username = request_body["username"].As<std::optional<std::string>>();
         auto email = request_body["email"].As<std::optional<std::string>>();
 
         auto result = pg_cluster_->Execute(
@@ -42,16 +42,18 @@ class AddUser final : public userver::server::handlers::HttpHandlerBase {
             "INSERT INTO users(username, email) VALUES ($1, $2) "
             "ON CONFLICT (email) DO NOTHING "
             "RETURNING user_id",
-            name, email
+            username, email
         );
 
         if(result.IsEmpty()) {
-            return "BAD";
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "Bad request.";
         }
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-        return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 
