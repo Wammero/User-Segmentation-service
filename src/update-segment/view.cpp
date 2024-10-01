@@ -30,15 +30,21 @@ class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
       userver::server::request::RequestContext&) const override {
     
     try {
+ 
+        auto json_request_body = request.RequestBody();
+        if(json_request_body.empty()) {
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+            return "No arguments.";
+        }
 
-        auto request_body =
-            userver::formats::json::FromString(request.RequestBody());
+        auto request_body = userver::formats::json::FromString(json_request_body);
 
-        auto segment_id = request.GetPathArg("id");
+        auto segment_id = request.GetPathArg("segment_id");
         auto segment_name = request_body["name"].As<std::optional<std::string>>();
 
         if(!segment_name.has_value()) {
-            return "BAD";
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "No arguments.";
         }
 
         pg_cluster_->Execute(
@@ -50,7 +56,8 @@ class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-      return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 

@@ -31,10 +31,19 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
     
     try {
 
-      auto request_body =
-              userver::formats::json::FromString(request.RequestBody());
+      auto json_request_body = request.RequestBody();
+      if(json_request_body.empty()) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "No arguments.";
+      }
+
+      auto request_body = userver::formats::json::FromString(json_request_body);
 
       auto name = request_body["name"].As<std::optional<std::string>>();
+
+      if(!name) {
+        
+      }
 
       auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
@@ -50,7 +59,8 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
 
       return "{\"status\": \"OK\"}";
       } catch (std::exception& ex) {
-        return ex.what();
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return "Bad request.";
       }
   }
 

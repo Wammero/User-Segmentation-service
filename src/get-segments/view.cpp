@@ -38,11 +38,6 @@ class GetSegments final : public userver::server::handlers::HttpHandlerBase {
             userver::storages::postgres::ClusterHostType::kMaster,
             "SELECT * FROM segments"
         );
-
-        if(result.IsEmpty()) {
-            return "BAD";
-        }
-
         
         userver::formats::json::ValueBuilder products_array(userver::formats::json::Type::kArray);
 
@@ -59,7 +54,8 @@ class GetSegments final : public userver::server::handlers::HttpHandlerBase {
                                                     {' ', 4});
 
     } catch (std::exception& ex) {
-        return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 

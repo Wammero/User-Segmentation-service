@@ -71,12 +71,12 @@ components_manager:
             task_processor: main-task-processor 
         
         handler-update-segment:                    
-            path: /update-segment/{id}               
+            path: /update-segment/{segment_id}               
             method: POST                  
             task_processor: main-task-processor 
 
         handler-delete-segment:                    
-            path: /delete-segment/{id}               
+            path: /delete-segment/{segment_id}               
             method: DELETE                  
             task_processor: main-task-processor 
 
@@ -96,7 +96,7 @@ components_manager:
             task_processor: main-task-processor
 
         handler-distribute-segment:                    
-            path: /distribute-segment               
+            path: /distribute-segment/{segment_id}               
             method: POST                  
             task_processor: main-task-processor
         

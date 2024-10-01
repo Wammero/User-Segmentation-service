@@ -33,7 +33,7 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
       userver::server::request::RequestContext&) const override {
     
     try {
-        auto segment_id = request.GetArg("segment_id");
+        auto segment_id = request.GetPathArg("segment_id");
         auto percentage = request.GetArg("percentage");
 
         auto result = pg_cluster_->Execute(
@@ -43,7 +43,8 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
         );
 
         if(result.IsEmpty()) {
-            return "BAD";
+            request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kNotFound);
+            return "Not found.";
         }
 
         int table_percentage = result.AsSingleRow<int>();
@@ -89,7 +90,8 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
         return "{\"status\": \"OK\"}";
 
     } catch (std::exception& ex) {
-        return ex.what();
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return "Bad request.";
     }
   }
 

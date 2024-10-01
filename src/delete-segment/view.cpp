@@ -31,7 +31,7 @@ class DeleteSegment final : public userver::server::handlers::HttpHandlerBase {
     
     try {
 
-        auto segment_id = request.GetPathArg("id");
+        auto segment_id = request.GetPathArg("segment_id");
 
         pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,
@@ -48,7 +48,8 @@ class DeleteSegment final : public userver::server::handlers::HttpHandlerBase {
 
         return "{\"status\": \"OK\"}";
     } catch (std::exception& ex) {
-      return ex.what();
+      request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+      return "Bad request.";
     }
   }
 
