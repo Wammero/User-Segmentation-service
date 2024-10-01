@@ -155,30 +155,14 @@ paths:
     get:
       tags:
         - user
-      summary: Get users
-      description: 'Get users'
-      operationId: getUsers
-      responses:
-        '200':
-          description: successful operation
-        '400':
-          description: invalid arguments
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
-  /get-users/{segment_id}:
-    get:
-      tags:
-        - user
       summary: Get users with special segment
       description: 'Get users with special segment'
       operationId: GetUsersWithSegment
       parameters:
         - name: segment_id
-          in: path
-          description: Pet id to delete
-          required: true
+          in: query        # Изменено на query, чтобы передавать параметр в URL, а не в path
+          description: ID сегмента для фильтрации пользователей (опционально)
+          required: false  # Теперь параметр не обязателен
           schema:
             type: integer
             format: int64

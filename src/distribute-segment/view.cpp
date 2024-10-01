@@ -102,6 +102,7 @@ class DistributeSegment final : public userver::server::handlers::HttpHandlerBas
                 "SELECT users.user_id, $1 FROM users "
                 "LEFT JOIN user_segments ON users.user_id = user_segments.user_id AND user_segments.segment_id = $1 "
                 "WHERE user_segments.user_id IS NULL "
+                "ORDER BY RANDOM() " 
                 "LIMIT $2",
                 segment_id, users_to_add
             );
