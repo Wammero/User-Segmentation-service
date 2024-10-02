@@ -42,7 +42,8 @@ class AddSegment final : public userver::server::handlers::HttpHandlerBase {
       auto name = request_body["name"].As<std::optional<std::string>>();
 
       if(!name) {
-        
+        request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+        return "No arguments.";
       }
 
       auto result = pg_cluster_->Execute(

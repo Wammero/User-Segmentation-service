@@ -32,7 +32,7 @@ class AddUser final : public userver::server::handlers::HttpHandlerBase {
     try {
     
         auto json_request_body = request.RequestBody();
-        
+
         if(json_request_body.empty()) {
             request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
             return "No arguments.";
@@ -42,6 +42,11 @@ class AddUser final : public userver::server::handlers::HttpHandlerBase {
 
         auto username = request_body["username"].As<std::optional<std::string>>();
         auto email = request_body["email"].As<std::optional<std::string>>();
+
+        if(!username || !email) {
+          request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
+          return "No arguments.";
+        }
 
         auto result = pg_cluster_->Execute(
             userver::storages::postgres::ClusterHostType::kMaster,

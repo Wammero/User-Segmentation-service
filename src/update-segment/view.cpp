@@ -48,7 +48,7 @@ class UpdateSegment final : public userver::server::handlers::HttpHandlerBase {
           return "Bad request.";
         }
 
-        if(!segment_name.has_value()) {
+        if(!segment_name) {
           request.GetHttpResponse().SetStatus(userver::server::http::HttpStatus::kBadRequest);
           return "No arguments.";
         }
