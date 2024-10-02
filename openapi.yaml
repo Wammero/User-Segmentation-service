@@ -25,17 +25,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: '#/components/schemas/Segment'
         required: true
       responses:
         '200':
           description: Successful operation
         '400':
           description: Invalid input
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /update-segment/{segment_id}:
     put:
       tags:
@@ -56,7 +52,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: '#/components/schemas/Segment'
       responses:
         '200':
           description: Successful operation
@@ -87,13 +83,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Pet'          
+                  $ref: '#/components/schemas/Segment'          
         '400':
           description: Invalid tag value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /delete-segment/{segment_id}:
     delete:
       tags:
@@ -114,10 +106,6 @@ paths:
           description: successful operation
         '400':
           description: Invalid pet value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /distribute-segment/{segment_id}:
     post:
       tags:
@@ -147,10 +135,6 @@ paths:
           description: invalid arguments
         '404':
           description: not found
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /get-users:
     get:
       tags:
@@ -160,9 +144,9 @@ paths:
       operationId: GetUsersWithSegment
       parameters:
         - name: segment_id
-          in: query        # Изменено на query, чтобы передавать параметр в URL, а не в path
+          in: query       
           description: ID сегмента для фильтрации пользователей (опционально)
-          required: false  # Теперь параметр не обязателен
+          required: false  
           schema:
             type: integer
             format: int64
@@ -171,10 +155,6 @@ paths:
           description: successful operation
         '400':
           description: invalid arguments
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /add-user:
     post:
       tags:
@@ -194,10 +174,7 @@ paths:
           description: Successful operation
         '400':
           description: Invalid input
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+
   /delete-user/{user_id}:
     delete:
       tags:
@@ -218,10 +195,7 @@ paths:
           description: successful operation
         '400':
           description: Invalid pet value
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
+          
   /add-user-to-segment/{user_id}:
     post:
       tags:
@@ -249,10 +223,6 @@ paths:
           description: successful operation
         '400':
           description: invalid arguments
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
   /delete-user-from-segment/{user_id}:
     delete:
       tags:
@@ -280,10 +250,6 @@ paths:
           description: successful operation
         '400':
           description: invalid arguments
-      security:
-        - petstore_auth:
-            - write:pets
-            - read:pets
             
 components:
   schemas:
@@ -296,32 +262,9 @@ components:
         email:
           type: string
           example: Mike@yandex.ru
-      xml:
-        name: user
-    Pet:
-      required:
-        - name
-        - photoUrls
+    Segment:
       type: object
       properties:
         name:
           type: string
           example: MAIL_VOICE_MESSAGES
-      xml:
-        name: pet
-  requestBodies:
-    Pet:
-      description: Pet object that needs to be added to the store
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Pet'
-  securitySchemes:
-    petstore_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
