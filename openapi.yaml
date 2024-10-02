@@ -114,7 +114,7 @@ paths:
         - name: percentage
           in: query
           description: Auto percentage for distribution
-          required: false
+          required: true
           schema:
             type: number
             format: float
@@ -204,7 +204,7 @@ paths:
         - name: segment_id
           in: query
           description: segment_id
-          required: false
+          required: true
           schema:
             type: number
             format: float
@@ -231,7 +231,7 @@ paths:
         - name: segment_id
           in: query
           description: segment_id
-          required: false
+          required: true
           schema:
             type: number
             format: float
