@@ -65,16 +65,6 @@ paths:
       summary: Get all segments.
       description: Get all segments.
       operationId: GetAllSegments
-      parameters:
-        - name: tags
-          in: query
-          description: Tags to filter by
-          required: false
-          explode: true
-          schema:
-            type: array
-            items:
-              type: string
       responses:
         '200':
           description: successful operation
